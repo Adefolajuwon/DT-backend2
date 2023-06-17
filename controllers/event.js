@@ -1,7 +1,7 @@
-const collection = require('../lib/mongod');
-
+const { startmongod } = require('../lib/mongod');
 async function createEvent(req, res) {
 	try {
+		const { collection, message } = await startmongod();
 		const {
 			name,
 			file,
