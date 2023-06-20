@@ -96,4 +96,5 @@ async function updateEvent(req, res) {
 module.exports = {
 	createEvent,
 	getEventRecency,
+	updateEvent,
 };
