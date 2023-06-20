@@ -1,7 +1,8 @@
 const { startmongod } = require('../lib/mongod');
+const { collection, message } = await startmongod();
+
 async function createEvent(req, res) {
 	try {
-		const { collection, message } = await startmongod();
 		const {
 			name,
 			file,
@@ -55,7 +56,7 @@ async function getEventRecency() {
 }
 async function updateEvent(req, res) {
 	try {
-		const { collection, message } = await startmongod();
+		// const { collection, message } = await startmongod();
 		const id = req.query;
 		const {
 			name,
@@ -92,9 +93,18 @@ async function updateEvent(req, res) {
 		res.status(501).json(error);
 	}
 }
-async function getEventByID() {
+async function getEventByID(req, res) {
 	try {
-	} catch (error) {}
+		const id = req.params;
+		const event = await collection.findOne(id);
+		if (!event) {
+			return res.status(404).json({ error: 'sevent not found' });
+		}
+
+		res.status.json(event);
+	} catch (error) {
+		res.status(501).json({ error });
+	}
 }
 
 module.exports = {
