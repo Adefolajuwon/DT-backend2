@@ -1,40 +1,39 @@
 const { startmongod } = require('../lib/mongod');
 const { collection, message } = await startmongod();
-
 async function createEvent(req, res) {
 	try {
-		const {
-			name,
-			file,
-			tagline,
-			schedule,
-			description,
-			moderator,
-			category,
-			sub_category,
-			rigor_rank,
-		} = req.body;
-
-		const event = {
-			name,
-			file,
-			tagline,
-			schedule,
-			description,
-			moderator,
-			category,
-			sub_category,
-			rigor_rank,
-		};
-
-		const result = await collection.insertOne(event);
-		res.status(200).json({ status: result.insertedId });
+	  const {
+		name,
+		file,
+		tagline,
+		schedule,
+		description,
+		moderator,
+		category,
+		sub_category,
+		rigor_rank,
+	  } = req.body;
+  
+	  const event = {
+		name,
+		file,
+		tagline,
+		schedule: new Date(), // Assign current timestamp to schedule field
+		description,
+		moderator,
+		category,
+		sub_category,
+		rigor_rank: parseInt(rigor_rank), // Convert rigor_rank to an integer
+	  };
+  
+	  const result = await collection.insertOne(event);
+	  res.status(200).json({ status: result.insertedId });
 	} catch (error) {
-		console.error(error);
-		res.status(500).json({ error: 'Failed to create event.' });
+	  console.error(error);
+	  res.status(500).json({ error: 'Failed to create event.' });
 	}
-}
-async function getEventRecency() {
+  
+async function getEventRecency(req, res) {
 	try {
 		const { type, limit, page } = req.query;
 
@@ -70,7 +69,7 @@ async function updateEvent(req, res) {
 			rigor_rank,
 		} = req.body;
 
-		const event = await collection.findOne(id);
+		const event = await collection.findOne({ _id: id });
 
 		if (!event) {
 			return res.status(404).json({ message: 'Event not found' });
@@ -95,14 +94,43 @@ async function updateEvent(req, res) {
 }
 async function getEventByID(req, res) {
 	try {
-		const id = req.params;
-		const event = await collection.findOne(id);
+		const id = req.params.id; // Assuming the ID is available in req.params.id
+		const event = await collection.findOne({ _id: id }); // Assuming your collection uses "_id" as the identifier field
+
 		if (!event) {
-			return res.status(404).json({ error: 'sevent not found' });
+			return res.status(404).json({ error: 'Event not found' });
 		}
 
-		res.status.json(event);
+		res.json(event);
 	} catch (error) {
+		res.status(501).json({ error });
+	}
+}
+
+// async function deleteEvent(req, res) {
+// 	try {
+// 		const id = req.params;
+// 		const event = await collection.findOneAndDelete(id);
+// 		if (!event) {
+// 			res.status(404).json({ error: 'Event not found' });
+// 		}
+// 	} catch (error) {
+// 		console.log(error);
+// 		res.json(501).json({ error });
+// 	}
+// }
+async function deleteEvent(req, res) {
+	try {
+		const id = req.params.id; // Assuming the ID is available in req.params.id
+		const event = await collection.findOneAndDelete({ _id: id }); // Assuming your collection uses "_id" as the identifier
+
+		if (!event.value) {
+			return res.status(404).json({ error: 'Event not found' });
+		}
+
+		res.json({ message: 'Event deleted successfully' });
+	} catch (error) {
+		console.log(error);
 		res.status(501).json({ error });
 	}
 }
@@ -111,4 +139,6 @@ module.exports = {
 	createEvent,
 	getEventRecency,
 	updateEvent,
+	getEventByID,
+	deleteEvent,
 };
