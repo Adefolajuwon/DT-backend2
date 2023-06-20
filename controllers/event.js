@@ -92,6 +92,10 @@ async function updateEvent(req, res) {
 		res.status(501).json(error);
 	}
 }
+async function getEventByID() {
+	try {
+	} catch (error) {}
+}
 
 module.exports = {
 	createEvent,
