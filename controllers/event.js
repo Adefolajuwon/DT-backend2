@@ -33,7 +33,11 @@ async function createEvent(req, res) {
 		res.status(500).json({ error: 'Failed to create event.' });
 	}
 }
-
+async function getEvent() {
+	try {
+		const id = req.params._id;
+	} catch (error) {}
+}
 module.exports = {
 	createEvent,
 };
