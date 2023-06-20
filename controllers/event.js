@@ -48,13 +48,51 @@ async function getEventRecency() {
 
 		// Retrieve the events based on the calculated indices
 		const paginatedEvents = events.slice(startIndex, endIndex);
-
 		res.json(paginatedEvents);
 	} catch (error) {
 		res.status(404).json({ error });
 	}
 }
-async function updateEvent() {}
+async function updateEvent(req, res) {
+	try {
+		const { collection, message } = await startmongod();
+		const id = req.query;
+		const {
+			name,
+			file,
+			tagline,
+			schedule,
+			description,
+			moderator,
+			category,
+			sub_category,
+			rigor_rank,
+		} = req.body;
+
+		const event = await collection.findOne(id);
+
+		if (!event) {
+			return res.status(404).json({ message: 'Event not found' });
+		}
+
+		event.name = name;
+		event.file = file;
+		event.tagline = tagline;
+		event.schedule = schedule;
+		event.description = description;
+		event.moderator = moderator;
+		event.category = category;
+		event.sub_category = sub_category;
+		event.rigor_rank = rigor_rank;
+
+		await collection.updateOne(id, event);
+
+		res.json(event);
+	} catch (error) {
+		res.status(501).json(error);
+	}
+}
+
 module.exports = {
 	createEvent,
 	getEventRecency,
