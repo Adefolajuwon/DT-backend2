@@ -69,10 +69,10 @@ async function createEvent(req, res) {
 				rigor_rank,
 			} = req.body;
 
-			const event = await collection.findOne({ _id: id });
+			const event = await collection.updateOne({ _id: id });
 
 			if (!event) {
-				return res.status(404).json({ message: 'Event not found' });
+				return res.status(404).json({ messageW: 'Event not found' });
 			}
 
 			event.name = name;
@@ -94,8 +94,8 @@ async function createEvent(req, res) {
 	}
 	async function getEventByID(req, res) {
 		try {
-			const id = req.params.id; // Assuming the ID is available in req.params.id
-			const event = await collection.findOne({ _id: id }); // Assuming your collection uses "_id" as the identifier field
+			const id = req.params.id; 
+			const event = await collection.findOne({ _id: id }); 
 
 			if (!event) {
 				return res.status(404).json({ error: 'Event not found' });
@@ -107,24 +107,12 @@ async function createEvent(req, res) {
 		}
 	}
 
-	// async function deleteEvent(req, res) {
-	// 	try {
-	// 		const id = req.params;
-	// 		const event = await collection.findOneAndDelete(id);
-	// 		if (!event) {
-	// 			res.status(404).json({ error: 'Event not found' });
-	// 		}
-	// 	} catch (error) {
-	// 		console.log(error);
-	// 		res.json(501).json({ error });
-	// 	}
-	// }
 	async function deleteEvent(req, res) {
 		try {
 			const id = req.params.id; // Assuming the ID is available in req.params.id
 			const event = await collection.findOneAndDelete({ _id: id }); // Assuming your collection uses "_id" as the identifier
 
-			if (!event.value) {
+			if (!event) {
 				return res.status(404).json({ error: 'Event not found' });
 			}
 
@@ -134,12 +122,12 @@ async function createEvent(req, res) {
 			res.status(501).json({ error });
 		}
 	}
-}
+
 
 module.exports = {
 	createEvent,
 	getEventRecency,
 	updateEvent,
 	getEventByID,
-	deleteEvent,
-};
+	deleteEvent
+}

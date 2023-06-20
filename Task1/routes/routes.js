@@ -13,4 +13,5 @@ router.post('/event', createEvent);
 router.get('/event', getEventRecency);
 router.put('/event', updateEvent);
 router.get('/event/:id', getEventByID);
+router.delete('/event', deleteEvent);
 module.exports = router;
