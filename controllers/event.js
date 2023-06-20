@@ -33,11 +33,29 @@ async function createEvent(req, res) {
 		res.status(500).json({ error: 'Failed to create event.' });
 	}
 }
-async function getEvent() {
+async function getEventRecency() {
 	try {
-		const id = req.params._id;
-	} catch (error) {}
+		const { type, limit, page } = req.query;
+
+		// Check if the provided query parameters are valid
+		if (type !== 'latest' || isNaN(limit) || isNaN(page)) {
+			return res.status(400).json({ error: 'Invalid query parameters' });
+		}
+
+		// Calculate the start and end index of events based on the limit and page number
+		const startIndex = (page - 1) * limit;
+		const endIndex = startIndex + parseInt(limit);
+
+		// Retrieve the events based on the calculated indices
+		const paginatedEvents = events.slice(startIndex, endIndex);
+
+		res.json(paginatedEvents);
+	} catch (error) {
+		res.status(404).json({ error });
+	}
 }
+async function updateEvent() {}
 module.exports = {
 	createEvent,
+	getEventRecency,
 };
